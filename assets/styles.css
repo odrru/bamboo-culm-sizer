@@ -1,0 +1,662 @@
+:root {
+            --c-headband: #1F3A5F;
+            --c-headtext: #FFFFFF;
+            --c-line: #000000;
+            --c-fail: #B30000;
+            --c-ok: #006400;
+            --c-edit: #1F3A5F;
+            --c-section: #6b8e23;
+            --font-serif: 'KaTeX_Main', 'Latin Modern Roman', 'CMU Serif', 'STIX Two Text', Cambria, 'Times New Roman', Georgia, serif;
+            --font-ui: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-ui);
+            color: black;
+            background: #d8dbe0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .report-wrap {
+            padding: 24px 0 12px;
+            overflow-x: auto;
+        }
+
+        .sheet {
+            width: 297mm;
+            min-height: 210mm;
+            margin: 18px auto;
+            padding: 20mm 18mm 18mm 18mm;
+            background: white;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, .18);
+            font-size: 11pt;
+            line-height: 1.28;
+        }
+
+        .page-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            max-width: 297mm;
+            margin: 0 auto;
+            padding: 16px 18mm 24px;
+            font-family: 'Inter', var(--font-ui);
+            font-size: 13px;
+        }
+
+        .btn {
+            background: var(--c-headband);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background: #2a4d7a;
+        }
+
+        .btn[disabled] {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .latex-logo {
+            font-family: var(--font-serif);
+        }
+
+        .latex-logo .a {
+            font-size: .75em;
+            vertical-align: .28em;
+            margin-left: -.36em;
+            margin-right: -.15em;
+            text-transform: uppercase;
+        }
+
+        .latex-logo .e {
+            vertical-align: -.25em;
+            margin-left: -.125em;
+            margin-right: -.075em;
+            text-transform: uppercase;
+        }
+
+        .proj-header {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 6pt;
+        }
+
+        .proj-header td {
+            border: .5pt solid var(--c-line);
+            padding: 4pt 8pt;
+            vertical-align: middle;
+            font-size: 10.5pt;
+        }
+
+        .proj-header .company {
+            width: 40%;
+        }
+
+        .proj-header .company .name {
+            font-size: 14pt;
+            font-weight: bold;
+            line-height: 1.1;
+            display: block;
+        }
+
+        .proj-header .company .sub {
+            font-size: 9.5pt;
+            display: block;
+        }
+
+        .proj-header .company .name input.txt {
+            display: block;
+            width: 100%;
+            font: inherit;
+            box-sizing: border-box;
+            font-size: 14pt;
+            font-weight: bold;
+            line-height: 1.1;
+        }
+
+        .proj-header .company .sub input.txt {
+            display: block;
+            width: 100%;
+            font: inherit;
+            box-sizing: border-box;
+            font-size: 9.5pt;
+            margin-top: 1pt;
+        }
+
+        .proj-header .proj-comp-row {
+            display: flex;
+            align-items: baseline;
+            gap: 18pt;
+            width: 100%;
+        }
+
+        .proj-header .proj-comp-row .field {
+            display: flex;
+            align-items: baseline;
+            gap: 4pt;
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
+        .proj-header .proj-comp-row .field .label {
+            white-space: nowrap;
+        }
+
+        .proj-header .proj-comp-row .field strong {
+            flex: 1;
+            min-width: 0;
+            display: block;
+        }
+
+        .proj-header .proj-comp-row .field input.txt {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        input.txt,
+        input.num,
+        select.inline {
+            font: inherit;
+            color: inherit;
+            background: transparent;
+            border: none;
+            border-bottom: 1px dotted #888;
+            padding: 0 2px;
+            outline: none;
+        }
+
+        input.num {
+            width: 4.6em;
+            text-align: right;
+            -moz-appearance: textfield;
+            font-variant-numeric: tabular-nums;
+        }
+
+        input.num::-webkit-outer-spin-button,
+        input.num::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input.txt:hover,
+        input.num:hover,
+        select.inline:hover {
+            background: #fffce8;
+        }
+
+        input.txt:focus,
+        input.num:focus,
+        select.inline:focus {
+            background: #fff7c0;
+            border-bottom-color: var(--c-edit);
+        }
+
+        input.num[readonly] {
+            color: #666;
+            background: #f4f4f4;
+            cursor: not-allowed;
+        }
+
+        input.num[readonly]:hover {
+            background: #f4f4f4;
+        }
+
+        select.inline {
+            cursor: pointer;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding-right: 12px;
+            background-image: linear-gradient(45deg, transparent 50%, #888 50%), linear-gradient(-45deg, transparent 50%, #888 50%);
+            background-position: calc(100% - 6px) 55%, calc(100% - 2px) 55%;
+            background-size: 4px 4px, 4px 4px;
+            background-repeat: no-repeat;
+        }
+
+        .grid-2x2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 18pt;
+            row-gap: 14pt;
+            margin-top: 6pt;
+        }
+
+        .grid-3col {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            column-gap: 18pt;
+            row-gap: 14pt;
+            margin-bottom: 14pt;
+        }
+
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 22pt;
+            row-gap: 14pt;
+            margin-bottom: 14pt;
+        }
+
+        .panel-head {
+            font-size: 13pt;
+            font-weight: bold;
+            margin-bottom: 4pt;
+        }
+
+        .geom-cell .panel-head {
+            margin-bottom: 10pt;
+        }
+
+        .bk-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10pt;
+        }
+
+        .bk-table thead tr {
+            border-top: 1.4pt solid var(--c-line);
+        }
+
+        .bk-table thead th {
+            border-bottom: .4pt solid var(--c-line);
+            text-align: left;
+            font-weight: normal;
+            padding: 3pt 10pt 3pt 0;
+        }
+
+        .bk-table tbody tr:last-child td {
+            border-bottom: 1.4pt solid var(--c-line);
+        }
+
+        .bk-table td {
+            padding: 2.5pt 10pt 2.5pt 0;
+            vertical-align: middle;
+        }
+
+        .bk-table td:last-child {
+            padding-right: 0;
+        }
+
+        .bk-table .sym,
+        .bk-table .val {
+            white-space: nowrap;
+        }
+
+        .check-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9.5pt;
+            margin-top: 4pt;
+        }
+
+        .check-table thead tr {
+            border-top: 1.4pt solid var(--c-line);
+        }
+
+        .check-table thead th {
+            border-bottom: .4pt solid var(--c-line);
+            text-align: left;
+            font-weight: normal;
+            padding: 4pt 10pt 4pt 0;
+        }
+
+        .check-table tbody tr:last-child td {
+            border-bottom: 1.4pt solid var(--c-line);
+        }
+
+        .check-table td {
+            padding: 5pt 10pt 5pt 0;
+            vertical-align: middle;
+        }
+
+        .check-table .check-name {
+            font-weight: 500;
+        }
+
+        .check-table .check-ref {
+            font-size: 8.5pt;
+            color: #666;
+            margin-top: 1pt;
+        }
+
+        .check-table .check-ratio {
+            font-variant-numeric: tabular-nums;
+            text-align: right;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .check-table .check-bar-wrap {
+            display: inline-block;
+            width: 70pt;
+            height: 5pt;
+            background: #e5e7eb;
+            border-radius: 2pt;
+            overflow: hidden;
+            vertical-align: middle;
+        }
+
+        .check-table .check-bar-fill {
+            display: block;
+            height: 100%;
+        }
+
+        .check-table .check-status {
+            font-weight: bold;
+            font-size: 9pt;
+            letter-spacing: .04em;
+            white-space: nowrap;
+        }
+
+        .check-table .check-status.ok {
+            color: var(--c-ok);
+        }
+
+        .check-table .check-status.fail {
+            color: var(--c-fail);
+        }
+
+        .check-table .check-status.na {
+            color: #888;
+        }
+
+        .geom-cell {
+            text-align: center;
+        }
+
+        .geom-cell svg {
+            display: block;
+            margin: 0 auto;
+            max-width: 92%;
+            height: auto;
+        }
+
+        .geom-cell .caption {
+            font-size: 10pt;
+            margin-top: 4pt;
+        }
+
+        #sec-svg {
+            font-family: var(--font-serif);
+        }
+
+        #sec-svg .axis {
+            stroke: #7a7a7a;
+            stroke-width: .6;
+            stroke-dasharray: 4 3;
+            fill: none;
+        }
+
+        #sec-svg .center-dot {
+            fill: #555;
+        }
+
+        #sec-svg .section-stroke {
+            stroke: black;
+            stroke-width: 1;
+            fill: rgba(140, 168, 90, 0.20);
+            fill-rule: evenodd;
+        }
+
+        #sec-svg .dim-line {
+            stroke: #555;
+            stroke-width: .5;
+            fill: none;
+        }
+
+        #sec-svg .dim-text {
+            font-size: 9pt;
+            fill: #333;
+        }
+
+        #sec-svg .dim-text .var {
+            font-style: italic;
+        }
+
+        #sec-svg .axis-label {
+            font-style: italic;
+            font-size: 8.5pt;
+            fill: #888;
+        }
+
+        /* Verdict card.
+           Chrome (border-left, tint, padding) is reused from .scope-note via
+           the wrapper class. The rules below scope the original "magnificent"
+           inner layout (badge, big coloured headline, huge tabular percentage,
+           governing line) to this card so it doesn't collide with anything
+           else, and make sure the card stretches to fill its grid cell. */
+        #verdict-card {
+            align-self: stretch;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            margin-left: 10px;
+        }
+
+        #verdict-card .badge {
+            font-family: 'Inter', var(--font-ui);
+            font-size: 9pt;
+            font-weight: 700;
+            letter-spacing: .1em;
+            padding: 3pt 10pt;
+            border-radius: 3pt;
+            color: white;
+        }
+
+        #verdict-card.ok .badge {
+            background: var(--c-ok);
+        }
+
+        #verdict-card.fail .badge {
+            background: var(--c-fail);
+        }
+
+        #verdict-card .headline {
+            font-family: 'Inter', var(--font-ui);
+            font-size: 17pt;
+            font-weight: bold;
+            margin-top: 10pt;
+            line-height: 1.15;
+        }
+
+        #verdict-card.ok .headline {
+            color: var(--c-ok);
+        }
+
+        #verdict-card.fail .headline {
+            color: var(--c-fail);
+        }
+
+        #verdict-card .util-label {
+            font-family: 'Inter', var(--font-ui);
+            font-size: 8.5pt;
+            color: #666;
+            letter-spacing: .04em;
+            margin-top: 14pt;
+        }
+
+        #verdict-card .util-num {
+            font-family: 'Inter', var(--font-ui);
+            font-size: 32pt;
+            font-weight: 700;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+            margin-top: 2pt;
+        }
+
+        #verdict-card.ok .util-num {
+            color: var(--c-ok);
+        }
+
+        #verdict-card.fail .util-num {
+            color: var(--c-fail);
+        }
+
+        #verdict-card .util-num .pct {
+            font-size: 18pt;
+            font-weight: 500;
+            margin-left: 2pt;
+        }
+
+        #verdict-card .gov {
+            font-family: 'Inter', var(--font-ui);
+            font-size: 10.5pt;
+            margin-top: 14pt;
+            color: #333;
+        }
+
+        #verdict-card .gov .lbl {
+            color: #777;
+            margin-right: 4pt;
+        }
+
+        /* New page-1 left column: stacks Section Geometry on top of the
+           Verdict card so the verdict fills the remaining vertical space
+           below the drawing while the right column holds the long
+           Design Parameters table. */
+        .page1-left {
+            display: flex;
+            flex-direction: column;
+            gap: 14pt;
+            height: 100%;
+        }
+
+        .page1-left #verdict-card {
+            flex: 1 1 auto;
+            margin-left: 0;
+        }
+
+        .calc-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: .5pt solid var(--c-line);
+            font-size: 9.5pt;
+        }
+
+        .calc-table thead th {
+            background: var(--c-headband);
+            color: var(--c-headtext);
+            padding: 5pt 8pt;
+            text-align: left;
+            font-weight: bold;
+            border: .5pt solid var(--c-line);
+            letter-spacing: .02em;
+        }
+
+        .calc-table .ref-col {
+            width: 14%;
+        }
+
+        .calc-table .calc-col {
+            width: 58%;
+        }
+
+        .calc-table .out-col {
+            width: 28%;
+        }
+
+        .calc-table td {
+            border: .5pt solid var(--c-line);
+            padding: 6pt 8pt;
+            vertical-align: top;
+        }
+
+        .calc-table td.ref {
+            font-size: 9pt;
+        }
+
+        .calc-table .calc-name {
+            font-weight: bold;
+            margin-bottom: 3pt;
+        }
+
+        .calc-table .calc-eq .katex-display {
+            margin: .2em 0;
+        }
+
+        .calc-table td.out {
+            font-size: 9pt;
+        }
+
+        .calc-table .out-line {
+            display: block;
+            margin: 1pt 0;
+        }
+
+        .calc-table .footnote {
+            font-size: 8.5pt;
+            color: #555;
+        }
+
+        .calc-table .fail {
+            color: var(--c-fail);
+            font-weight: bold;
+            display: block;
+            margin-top: 3pt;
+        }
+
+        .err-banner {
+            display: none;
+            max-width: 297mm;
+            margin: 12px auto;
+            padding: 8px 18mm;
+            background: #fde8e8;
+            color: var(--c-fail);
+            font-family: 'Inter', var(--font-ui);
+            font-size: 13px;
+        }
+
+        .err-banner.show {
+            display: block;
+        }
+
+        /* Scope panel - IStructE-only addition, styled to fit the report sheet */
+        .scope-note {
+            font-family: 'Inter', var(--font-ui);
+            font-size: 9.5pt;
+            color: #444;
+            background: #f5f7fb;
+            border-left: 3px solid var(--c-headband);
+            padding: 8pt 10pt;
+            margin: 0 0 10pt 0;
+            line-height: 1.45;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .page-footer,
+            .err-banner {
+                display: none;
+            }
+
+            .report-wrap {
+                padding: 0;
+                overflow: visible;
+            }
+
+            .sheet {
+                box-shadow: none;
+                margin: 0;
+                page-break-after: always;
+            }
+        }
+
