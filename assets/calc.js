@@ -179,7 +179,7 @@ function runCalculation(b) {
     const fv_allow = sp.fvk * fShear;
 
     // Section resistances
-    const M_allow = sec.S * fm_allow / 1e6;          // kNm
+    const M_allow = n_culms * sec.S * fm_allow / 1e6;          // kNm
     const V_allow = (sec.A * fv_allow) / 2 / 1000;   // kN
     const Pt_allow = n_culms * sec.A * ft0_allow / 1000; // kN
 
@@ -297,7 +297,7 @@ function runCalculation(b) {
 
     // ---------- Verification checks ----------
     const checks = [
-        { name: 'Bending', ref: 'ISO 22156 §8.2 / IStructE Manual (2025) §6.3', expr: 'M / M_{allow}', r: r_bend, active: Math.abs(M) > 0 },
+        { name: 'Bending', ref: 'IStructE Manual (2025) §6.7.1 (Eq. 6.6b)', expr: 'M / M_{allow}', r: r_bend, active: Math.abs(M) > 0 },
         { name: 'Shear', ref: 'ISO 22156 §8.3 / IStructE Manual (2025) §6.6', expr: 'V / V_{allow}', r: r_shear, active: Math.abs(V) > 0 },
         { name: 'Compression (short)', ref: 'ISO 22156 §8.1 / IStructE Manual (2025) §6.4', expr: '\\sigma_{c,0} / f_{c,0,allow}', r: r_comp, active: Pc > 0 },
         { name: 'Tension', ref: 'ISO 22156 §8.4 / IStructE Manual (2025) §6.5', expr: '\\sigma_{t,0} / f_{t,0,allow}', r: r_tens, active: Pt > 0 },
@@ -405,10 +405,10 @@ function runCalculation(b) {
         },
         {
             title: 'Bending Resistance', sym: 'M_{allow}',
-            ref: 'IStructE Manual (2025) §6.3', ng: r_bend > 1,
+            ref: 'IStructE Manual (2025) §6.7.1 (Eq. 6.6b)', ng: r_bend > 1,
             tex: {
-                sym: 'M_{allow} = S\\,f_{m,allow}',
-                sub: `M_{allow} = ${fInt(sec.S)} \\cdot ${f(fm_allow)}`,
+                sym: 'M_{allow} = n_{culms}\\,S\\,f_{m,allow}',
+                sub: `M_{allow} = ${n_culms} \\cdot ${fInt(sec.S)} \\cdot ${f(fm_allow)}`,
                 result: `M_{allow} = ${f(M_allow, 3)}\\ \\text{kNm}`,
                 note: `(utilisation = ${f(r_bend, 3)})`
             }
