@@ -3,7 +3,7 @@
 
 A free, lightning-fast, client-side calculator for structural bamboo design.
 
-This tool performs Member-level Allowable Stress Design (ASD) checks per the **IStructE Manual (2025)** and **ISO 22156** standards. It calculates bending, shear, axial compression (crushing + buckling), axial tension, and combined actions for hollow bamboo culms.
+This tool performs member-level Allowable Stress Design (ASD) checks per **ISO 22156 (2021)** and the **IStructE Manual for the design of bamboo structures to ISO 22156:2021 (2025)**. It calculates bending, shear, axial compression (crushing and buckling), axial tension, and combined actions for single culms and supported bundle arrangements.
 
 > **Looking for the hosted version?** A hosted Pro version, continuously updated with new features, is available at [bamboo.oduru.dev](https://bamboo.oduru.dev). This open source repository is the self-hostable, client-side edition.
 
@@ -11,7 +11,8 @@ This tool performs Member-level Allowable Stress Design (ASD) checks per the **I
 
 - **Instant Calculations:** The entire calculation engine runs locally in your browser. No server delays, no API limits.
 - **Standards-Compliant:** Implements formulas and modification factors directly from the *IStructE Manual for the Structural Design of Bamboo (2025)*.
-- **LaTeX Export:** Automatically generates a fully formatted, professional LaTeX calculation package with a single click.
+- **PDF Reports:** Uses the browser print workflow to create a project-labelled calculation PDF.
+- **Bundle Design:** Supports the same culm counts, bundle layouts, checks, symbols, and defaults as the hosted member-design calculator.
 - **Dynamic Visuals:** Real-time SVG rendering of the culm cross-section as you type.
 
 ## Scope & Limitations
@@ -24,7 +25,7 @@ This tool covers:
 - Axial tension
 - Combined compression/tension + bending
 
-*Note: This version currently excludes ovality grading check, deflection, lateral-torsional buckling, bearing and circumferential bearing (§7.3.2), cleavage at holes (§7.4), connections (Chapter 7), and compression perpendicular to fibres. Results must always be verified by a qualified engineer.*
+*Note: Results must always be verified by a qualified engineer.*
 
 ## Getting Started
 
@@ -36,11 +37,19 @@ Because this application is 100% client-side (Static HTML/CSS/JS), there is no b
 
 ## Architecture
 
-The calculation engine runs entirely on the client-side (`assets/calc.js`). This ensures the tool functions perfectly offline and provides instant results. The UI is built with vanilla HTML/CSS/JS and uses KaTeX for rendering mathematical formulas.
+The calculation engine runs entirely on the client side (`assets/calc.js`). The UI remains vanilla HTML/CSS/JS and uses KaTeX for rendering mathematical formulas. There is no application build step.
+
+## Checks
+
+The regression suite uses Node's built-in test runner and has no package dependencies:
+
+```bash
+npm test
+```
 
 ## Contributions Welcome
 
-Pull requests are highly encouraged! Contributions can include implementing the missing scope items (such as lateral-torsional buckling, connections, bearing, or deflection), fixing edge cases in ISO 22156, or adding support for different engineering standards.
+Pull requests are highly encouraged!
 
 1. Fork the Project
 2. Create your Feature Branch from `main` (`git checkout -b feature/AmazingFeature`)

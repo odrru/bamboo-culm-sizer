@@ -70,25 +70,6 @@
             cursor: wait;
         }
 
-        .latex-logo {
-            font-family: var(--font-serif);
-        }
-
-        .latex-logo .a {
-            font-size: .75em;
-            vertical-align: .28em;
-            margin-left: -.36em;
-            margin-right: -.15em;
-            text-transform: uppercase;
-        }
-
-        .latex-logo .e {
-            vertical-align: -.25em;
-            margin-left: -.125em;
-            margin-right: -.075em;
-            text-transform: uppercase;
-        }
-
         .proj-header {
             width: 100%;
             border-collapse: collapse;

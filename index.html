@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <!-- bamboo-culm-sizer. v1.0.0 - 2026 by J.Oduru. -->
+    <!-- bamboo-culm-sizer. v1.1.0 - 2026 by J.Oduru. -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bamboo Culm Sizer</title>
@@ -22,26 +22,25 @@
             <table class="proj-header">
                 <tr>
                     <td rowspan="2" class="company">
-                        <span class="name"><input type="text" class="txt" id="hdr-company" value="Company Name"></span>
-                        <span class="sub"><input type="text" class="txt" id="hdr-subtitle"
-                                value="Additional Information"></span>
+                        <span class="name"><input type="text" class="txt" id="hdr-company" value="" placeholder="Company Name"></span>
+                        <span class="sub"><input type="text" class="txt" id="hdr-report-title" value="" placeholder="Report Title"></span>
                     </td>
-                    <td>Job No.: <strong><input type="text" class="txt" id="hdr-job" value=""
-                                style="width:6em"></strong></td>
+                    <td>Project No.: <strong><input type="text" class="txt" id="hdr-job" value=""
+                                placeholder="0001" style="width:6em"></strong></td>
                     <td>Date: <input type="text" class="txt" id="hdr-date" value="" style="width:8em"></td>
                 </tr>
                 <tr>
                     <td>Calcs by: <strong><input type="text" class="txt" id="hdr-made" value=""
-                                style="width:4em"></strong></td>
-                    <td>Checked by: <input type="text" class="txt" id="hdr-checked" value="" style="width:5em"></td>
+                                placeholder="Initials" style="width:4em"></strong></td>
+                    <td>Checked by: <input type="text" class="txt" id="hdr-checked" value="" placeholder="Initials" style="width:5em"></td>
                 </tr>
                 <tr>
                     <td colspan="3">
                         <div class="proj-comp-row">
                             <label class="field"><span class="label">Project:</span><strong><input type="text"
-                                        class="txt" id="hdr-project" value="Project Title"></strong></label>
-                            <label class="field"><span class="label">Component:</span><strong><input type="text"
-                                        class="txt" id="hdr-component" value="Bamboo Culm"></strong></label>
+                                        class="txt" id="hdr-project" value="" placeholder="Project Title"></strong></label>
+                            <label class="field"><span class="label">Member:</span><strong><input type="text"
+                                        class="txt" id="hdr-component" value="" placeholder="Description"></strong></label>
                         </div>
                     </td>
                 </tr>
@@ -66,12 +65,12 @@
                             <g id="dims"></g>
                             <g id="caxis-labels"></g>
                         </svg>
-                        <div class="caption" id="caption">&Oslash; 100 &times; 10.0 (mm)</div>
+                        <div class="caption" id="caption">&Oslash; 60 &times; 15.0 (mm)</div>
                     </div>
                     <div id="verdict-card">
                         <span class="badge" id="verdict-badge">&mdash;</span>
-                        <div class="headline" id="verdict-headline">&mdash;</div>
-                        <div class="util-label">Max Utilisation</div>
+                        <div class="headline" id="verdict-headline"></div>
+                        <div class="util-label">Max. Utilisation</div>
                         <div class="util-num"><span id="verdict-util">&mdash;</span><span class="pct">%</span></div>
                         <div class="gov"><span class="lbl">Governing:</span><span id="verdict-gov">&mdash;</span></div>
                     </div>
@@ -90,26 +89,14 @@
                             <tr>
                                 <td>Outer Diameter</td>
                                 <td class="sym kt" data-k="D"></td>
-                                <td class="val"><input type="number" class="num" id="D" value="100" step="0.1" min="50"
+                                <td class="val"><input type="number" class="num" id="D" value="60" step="0.1" min="50"
                                         max="250"> mm</td>
                             </tr>
                             <tr>
                                 <td>Wall Thickness</td>
                                 <td class="sym kt" data-k="t"></td>
-                                <td class="val"><input type="number" class="num" id="t" value="10" step="0.1" min="3"
+                                <td class="val"><input type="number" class="num" id="t" value="15" step="0.1" min="3"
                                         max="30"> mm</td>
-                            </tr>
-                            <tr>
-                                <td>Internode Length</td>
-                                <td class="sym kt" data-k="L_n"></td>
-                                <td class="val"><input type="number" class="num" id="Ln" value="300" step="1" min="100"
-                                        max="700"> mm</td>
-                            </tr>
-                            <tr>
-                                <td>External Taper</td>
-                                <td class="sym kt" data-k="\alpha_e"></td>
-                                <td class="val"><input type="number" class="num" id="alphaE" value="0.05" step="0.001"
-                                        min="0" max="0.5"> mm/mm</td>
                             </tr>
                             <tr>
                                 <td>Bow</td>
@@ -122,7 +109,7 @@
                                 <td class="sym">-</td>
                                 <td class="val">
                                     <select class="inline" id="species">
-                                        <option value="manual_scheme" selected>from Manual Tbl 4.4</option>
+                                        <option value="manual_scheme" selected>from Manual Table 4.4</option>
                                         <option value="custom">Custom (enter values)</option>
                                     </select>
                                 </td>
@@ -152,9 +139,9 @@
                                         max="15"> MPa</td>
                             </tr>
                             <tr>
-                                <td>Characteristic Modulus</td>
-                                <td class="sym kt" data-k="E_k"></td>
-                                <td class="val"><input type="number" class="num" id="Ek" value="15000" step="100"
+                                <td>Mean characteristic modulus</td>
+                                <td class="sym kt" data-k="E_{k,mean}"></td>
+                                <td class="val"><input type="number" class="num" id="Ek_mean" value="10000" step="100"
                                         min="4000" max="25000"> MPa</td>
                             </tr>
                             <tr>
@@ -162,9 +149,9 @@
                                 <td class="sym">SC</td>
                                 <td class="val">
                                     <select class="inline" id="sc">
-                                        <option value="1">SC 1 (dry, indoor)</option>
-                                        <option value="2" selected>SC 2 (sheltered)</option>
-                                        <option value="3">SC 3 (exposed)</option>
+                                        <option value="1">SC 1 - EMC &le; 12%</option>
+                                        <option value="2" selected>SC 2 - 12% &lt; EMC &le; 20%</option>
+                                        <option value="3">SC 3 - EMC &gt; 20%</option>
                                     </select>
                                 </td>
                             </tr>
@@ -181,13 +168,12 @@
                             </tr>
                             <tr>
                                 <td>Redundancy Class</td>
-                                <td class="sym kt" data-k="C_R"></td>
+                                <td class="sym">-</td>
                                 <td class="val">
                                     <select class="inline" id="crClass">
-                                        <option value="non_redundant">0.90 - Non-redundant (ISO 22156 &sect;5.4.1)
-                                        </option>
+                                        <option value="non_redundant">0.90 - Non-redundant</option>
                                         <option value="standard" selected>1.00 - Standard / other</option>
-                                        <option value="redundant">1.10 - Redundant (ISO 22156 &sect;5.4.2)</option>
+                                        <option value="redundant">1.10 - Redundant</option>
                                     </select>
                                 </td>
                             </tr>
@@ -198,27 +184,9 @@
                                         max="65"> &deg;C</td>
                             </tr>
                             <tr>
-                                <td>Test Moisture Content</td>
-                                <td class="sym kt" data-k="MC_{test}"></td>
-                                <td class="val"><input type="number" class="num" id="mcTest" value="12" step="1" min="0"
-                                        max="30"> %</td>
-                            </tr>
-                            <tr>
-                                <td>Service Moisture Content</td>
-                                <td class="sym kt" data-k="MC_{svc}"></td>
-                                <td class="val"><input type="number" class="num" id="mcService" value="12" step="1"
-                                        min="0" max="40"> %</td>
-                            </tr>
-                            <tr>
-                                <td>Size Factor</td>
-                                <td class="sym kt" data-k="C_F"></td>
-                                <td class="val"><input type="number" class="num" id="CF" value="1.00" step="0.01"
-                                        min="0.5" max="1.5"></td>
-                            </tr>
-                            <tr>
                                 <td>Member Length</td>
                                 <td class="sym kt" data-k="L"></td>
-                                <td class="val"><input type="number" class="num" id="L" value="2" step="0.05" min="0.5"
+                                <td class="val"><input type="number" class="num" id="L" value="1.5" step="0.05" min="0.5"
                                         max="20"> m</td>
                             </tr>
                             <tr>
@@ -230,7 +198,7 @@
                                             <option value="1.10" selected>1.10 (Pin-Pin)</option>
                                             <option value="0.80">0.80 (Pin-Fixed)</option>
                                             <option value="0.65">0.65 (Fixed-Fixed)</option>
-                                            <option value="1.00">1.00 - Truss element / stud in wall</option>
+                                            <option value="1.00">1.00 - Truss / stud</option>
                                         </optgroup>
                                         <optgroup label="No lateral restraint">
                                             <option value="2.40">2.40 (Pin-Pin)</option>
@@ -243,8 +211,25 @@
                             <tr>
                                 <td>Number of Culms</td>
                                 <td class="sym kt" data-k="n_{culms}"></td>
-                                <td class="val"><input type="number" class="num" id="n_culms" value="1" step="1" min="1"
-                                        max="20"></td>
+                                <td class="val">
+                                    <select class="inline" id="n_culms">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="6">6</option>
+                                        <option value="7" selected>7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                        <option value="12">12</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr id="bundle-grid-row" hidden>
+                                <td>Bundle Grid</td>
+                                <td class="sym">m x n</td>
+                                <td class="val"><select class="inline" id="bundle_grid"></select></td>
                             </tr>
                             <tr>
                                 <td>Axial Eccentricity</td>
@@ -255,25 +240,25 @@
                             <tr>
                                 <td>Bending Moment</td>
                                 <td class="sym kt" data-k="M"></td>
-                                <td class="val"><input type="number" class="num" id="M" value="0.5" step="0.001" min="0"
+                                <td class="val"><input type="number" class="num" id="M" value="0.9" step="0.001" min="0"
                                         max="500"> kNm</td>
                             </tr>
                             <tr>
                                 <td>Shear Force</td>
                                 <td class="sym kt" data-k="V"></td>
-                                <td class="val"><input type="number" class="num" id="V" value="0.25" step="0.01" min="0"
+                                <td class="val"><input type="number" class="num" id="V" value="0.5" step="0.01" min="0"
                                         max="500"> kN</td>
                             </tr>
                             <tr>
                                 <td>Compression</td>
                                 <td class="sym kt" data-k="P_c"></td>
-                                <td class="val"><input type="number" class="num" id="Pc" value="2" step="0.01" min="0"
+                                <td class="val"><input type="number" class="num" id="Pc" value="5.5" step="0.01" min="0"
                                         max="500"> kN</td>
                             </tr>
                             <tr>
                                 <td>Tension</td>
                                 <td class="sym kt" data-k="P_t"></td>
-                                <td class="val"><input type="number" class="num" id="Pt" value="6.7" step="0.01" min="0"
+                                <td class="val"><input type="number" class="num" id="Pt" value="9.5" step="0.01" min="0"
                                         max="500"> kN</td>
                             </tr>
                         </tbody>
@@ -373,9 +358,7 @@
         </div>
         <div class="err-banner" id="err-banner-bottom"></div>
         <footer class="page-footer">
-            <button class="btn" id="export-tex">
-                Export <span class="latex-logo">L<span class="a">a</span>T<span class="e">e</span>X</span>
-            </button>
+            <button class="btn" id="download-pdf">Download PDF</button>
         </footer>
     </div>
 

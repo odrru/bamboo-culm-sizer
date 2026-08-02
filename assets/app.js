@@ -1,4 +1,6 @@
-console.log('%c bamboo-culm-sizer. v1.0.0 - 2026 by J.Oduru.', 'font:11px Inter,sans-serif;color:#a8a29e;letter-spacing:0.04em');
+if (typeof window !== 'undefined') {
+    console.log('%c bamboo-culm-sizer. v1.1.0 - 2026 by J.Oduru.', 'font:11px Inter,sans-serif;color:#a8a29e;letter-spacing:0.04em');
+}
 const $ = (id) => document.getElementById(id);
 const gv = (id) => parseFloat($(id).value);
 const gs = (id) => $(id).value;
@@ -6,13 +8,9 @@ let _katexReady = false;
 const k = (s) => { if (!_katexReady) return `<span class="kt-pending">${s}</span>`; try { return katex.renderToString(s, { throwOnError: false, output: 'html' }); } catch { return s; } };
 const kd = (s) => { if (!_katexReady) return `<span class="kt-pending">${s}</span>`; try { return katex.renderToString(s, { displayMode: true, throwOnError: false, output: 'html' }); } catch { return s; } };
 
-// Scope note - client-owned. Fixed legal/scope copy that does not
-// depend on any input. Rendered synchronously during bootstrap so it
-// appears on initial page load. The same array is forwarded to
-// the LaTeX exporter so LaTeX exports embed identical wording from a
-// single source of truth.
+// Public member-design scope. Durability remains exclusive to the Pro app.
 const SCOPE_NOTE = [
-    '**Scope**: Member-level Allowable Stress Design per IStructE Manual (2025). Covers bending, shear, axial compression (crushing + buckling), axial tension, and combined compression/tension + bending; this version excludes ovality, deflection, lateral-torsional buckling, bearing and circumferential bearing (\u00A77.3.2), cleavage at holes (\u00A77.4), connections (Chapter 7), and compression perpendicular to fibres. Grade ovality outside this tool using project-specific rules in accordance with ISO 19624. Results must be verified by a qualified engineer.',
+    '**Scope**: Bamboo Culm Sizer is a member-level structural design tool for bamboo culms. Checks bending, shear, axial, and combined loading to ISO 22156 (2021) and IStructE Manual for the design of bamboo structures to ISO 22156:2021 (2025). Results must be reviewed by a qualified structural engineer.',
 ];
 
 function renderInlineMath() {
@@ -27,8 +25,7 @@ const escHtml = (s) => String(s)
 
 // Render a note string that may contain inline math wrapped in $...$.
 // Prose segments are HTML-escaped; math segments are typeset by KaTeX.
-// Mirrors the same splitter used by the LaTeX exporter so notes look the
-// same on-screen and in the exported LaTeX.
+// Keep prose escaped while allowing inline KaTeX expressions.
 const renderNoteHtml = (s) => {
     if (s == null) return '';
     const str = String(s);
@@ -91,6 +88,31 @@ function drawSection() {
     $('caption').textContent = `\u00D8 ${D.toFixed(0)} \u00D7 ${t.toFixed(1)} (mm)`;
 }
 
+function syncBundleGridOptions() {
+    const row = $('bundle-grid-row');
+    const select = $('bundle_grid');
+    const shape = window.BAMBOO_CALC.shapeFor(
+        Number.parseInt(gs('n_culms'), 10),
+        gv('D'),
+    );
+    const options = shape.type === 'rectangular' ? shape.options : [];
+    const current = select.value;
+
+    if (options.length <= 1) {
+        row.hidden = true;
+        select.innerHTML = '';
+        return;
+    }
+
+    select.innerHTML = options
+        .map(option => `<option value="${option.grid}">${option.grid}</option>`)
+        .join('');
+    select.value = options.some(option => option.grid === current)
+        ? current
+        : options[0].grid;
+    row.hidden = false;
+}
+
 // ---------- DOM templating helpers ----------
 const refHtml = (r) => {
     const txt = String(r ?? '').trim();
@@ -135,19 +157,32 @@ const checkRow = (c) => {
                 <td class="check-status ${ok ? 'ok' : 'fail'}">${ok ? 'OK' : 'FAIL'}</td>
             </tr>`;
 };
+const isUtilisationNote = (note) => String(note ?? '').trim().startsWith('(utilisation =');
+
 function formatOutputCell(c) {
-    const parts = c.tex.result.split(' = ').map(p => p.trim()).filter(Boolean);
-    let html = parts.map((p, i) =>
-        `<span class="out-line">${k(i < parts.length - 1 ? `${p} =` : p)}</span>`
-    ).join('');
-    if (c.tex.note) html += `<span class="footnote">${renderNoteHtml(c.tex.note)}</span>`;
-    if (c.ng) html += `<span class="fail">FAIL</span>`;
+    if (Array.isArray(c.tex.resultRows)) {
+        return c.tex.resultRows
+            .map(part => `<span class="out-line">${k(part)}</span>`)
+            .join('');
+    }
+
+    let html = `<span class="out-line">${k(c.tex.result)}</span>`;
+    if (isUtilisationNote(c.tex.note)) {
+        html += `<span class="footnote">${renderNoteHtml(c.tex.note)}</span>`;
+    }
+    if (typeof c.ng === 'boolean') {
+        html += `<span class="${c.ng ? 'fail' : 'ok'}">${c.ng ? 'FAIL' : 'OK'}</span>`;
+    }
+    if (c.tex.outputNote) {
+        html += `<span class="footnote">${renderNoteHtml(c.tex.outputNote)}</span>`;
+    }
     return html;
 }
 const calcRow = (c) => `<tr>
             <td class="ref">${refHtml(c.ref)}</td>
             <td class="calc">
-                <div class="calc-name">${c.title}${c.sym ? ' ' + k(c.sym) : ''}</div>
+                <div class="calc-name">${c.title}</div>
+                ${c.calcNote ? `<div class="footnote">${renderNoteHtml(c.calcNote)}</div>` : ''}
                 <div class="calc-eq">${kd(c.tex.sym)}</div>
                 ${c.tex.sub ? `<div class="calc-eq">${kd(c.tex.sub)}</div>` : ''}
             </td>
@@ -158,38 +193,33 @@ const calcRow = (c) => `<tr>
 function collectInputs() {
     return {
         // Geometry
-        D: gv('D'), t: gv('t'), Ln: gv('Ln'),
-        alphaE: gv('alphaE'), bow: gv('bow'),
+        D: gv('D'), t: gv('t'), bow: gv('bow'),
         // Material
         species: gs('species'),
         fmk: gv('fmk'), fc0k: gv('fc0k'), ft0k: gv('ft0k'), fvk: gv('fvk'),
-        Ek: gv('Ek'),
+        Ek_mean: gv('Ek_mean'),
         // Service / load context
         sc: gs('sc'),
         ld: gs('ld'),
         crClass: gs('crClass'),
         Tsvc: gv('Tsvc'),
-        mcTest: gv('mcTest'),
-        mcService: gv('mcService'),
-        CF: gv('CF'),
         // Member + boundary conditions
         L: gv('L'),
         K: gv('K'),
         n_culms: gv('n_culms'),
+        bundle_grid: gs('bundle_grid'),
         e_axial: gv('e_axial'),
         // ASD demands
         M: gv('M'), V: gv('V'), Pc: gv('Pc'), Pt: gv('Pt'),
-        // Header (for LaTeX export)
+        // Project header
         company: $('hdr-company').value,
-        subtitle: $('hdr-subtitle').value,
+        reportTitle: $('hdr-report-title').value,
         job: $('hdr-job').value,
         madeBy: $('hdr-made').value,
         checked: $('hdr-checked').value,
         date: $('hdr-date').value,
         project: $('hdr-project').value,
         component: $('hdr-component').value,
-        // Client-owned scope copy forwarded to LaTeX exporter.
-        scopeNote: SCOPE_NOTE,
     };
 }
 
@@ -198,7 +228,7 @@ function applyAppliedProps(applied, speciesKey) {
     if (!applied) return;
     const fields = [
         ['fmk', applied.fmk], ['fc0k', applied.fc0k], ['ft0k', applied.ft0k],
-        ['fvk', applied.fvk], ['Ek', applied.Ek],
+        ['fvk', applied.fvk], ['Ek_mean', applied.Ek_mean],
     ];
     const lock = speciesKey !== 'custom';
     for (const [id, val] of fields) {
@@ -212,17 +242,11 @@ function applyAppliedProps(applied, speciesKey) {
     }
 }
 function renderVerdict(v) {
-    // Card chrome (border-left, tint, padding) is owned by the static
-    // .scope-note wrapper class and never changes with verdict state.
-    // Only the inner "magnificent" content (badge + headline + util
-    // number + governing line) updates here, and the ok/fail state
-    // class on the wrapper drives the green/red colour for those
-    // inner pieces only.
     const card = $('verdict-card');
     card.classList.remove('ok', 'fail');
     card.classList.add(v.ok ? 'ok' : 'fail');
     $('verdict-badge').textContent = v.badge;
-    $('verdict-headline').textContent = v.headline;
+    $('verdict-headline').textContent = '';
     $('verdict-util').textContent = Number(v.util ?? 0).toFixed(1);
     $('verdict-gov').textContent = v.governing ?? '\u2014';
 }
@@ -265,6 +289,7 @@ function clearError() {
 
 let lastResponse = null;
 async function update() {
+    syncBundleGridOptions();
     const inputs = collectInputs();
     try {
         const result = window.BAMBOO_CALC.runCalculation(inputs);
@@ -276,37 +301,66 @@ async function update() {
         showError(e.message);
     }
 }
-async function downloadLatex() {
-    const btn = $('export-tex');
+function formatLocalDateForInput(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+}
+
+function sanitizePrintTitlePart(value) {
+    return String(value ?? '')
+        .trim()
+        .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '-')
+        .replace(/\s+/g, ' ')
+        .replace(/^-+|-+$/g, '');
+}
+
+function buildPrintDocumentTitle(inputs, fallbackTitle = 'Bamboo Culm Sizer') {
+    const parts = [inputs?.date, inputs?.component, inputs?.project]
+        .map(sanitizePrintTitlePart);
+
+    return parts.every(Boolean) ? parts.join('-') : fallbackTitle;
+}
+
+function downloadPdf() {
+    const btn = $('download-pdf');
+    const originalDocumentTitle = document.title;
+    const originalButtonText = btn.textContent;
+    const printClass = 'print-calculations-only';
     btn.disabled = true;
+    btn.textContent = 'Preparing PDF...';
+
     try {
         const inputs = collectInputs();
-        const snapshot = window.BAMBOO_CALC.runCalculation(inputs);
-        const hdr = {
-            company: inputs.company,
-            subtitle: inputs.subtitle,
-            job: inputs.job,
-            madeBy: inputs.madeBy,
-            checked: inputs.checked,
-            date: inputs.date,
-            project: inputs.project,
-            component: inputs.component,
-            speciesKey: inputs.species,
-        };
-        const tex = window.BAMBOO_CALC.buildLatex(snapshot, hdr);
-        const blob = new Blob([tex], { type: 'text/x-tex;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = Object.assign(document.createElement('a'), {
-            href: url,
-            download: `bamboo-culm-calc-${new Date().toISOString().slice(0, 10)}.tex`,
-        });
-        document.body.appendChild(a); a.click(); a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        window.BAMBOO_CALC.runCalculation(inputs);
         clearError();
+
+        let didCleanupPrintMode = false;
+        const cleanupPrintMode = () => {
+            if (didCleanupPrintMode) return;
+            didCleanupPrintMode = true;
+            document.body.classList.remove(printClass);
+            document.title = originalDocumentTitle;
+            window.removeEventListener('afterprint', cleanupPrintMode);
+            btn.disabled = false;
+            btn.textContent = originalButtonText;
+        };
+
+        document.title = buildPrintDocumentTitle(inputs, originalDocumentTitle);
+        document.body.classList.add(printClass);
+        window.addEventListener('afterprint', cleanupPrintMode);
+        window.requestAnimationFrame(() => {
+            window.print();
+            window.setTimeout(cleanupPrintMode, 1000);
+        });
     } catch (e) {
+        document.body.classList.remove(printClass);
+        document.title = originalDocumentTitle;
         showError(e.message);
-    } finally {
         btn.disabled = false;
+        btn.textContent = originalButtonText;
     }
 }
 
@@ -318,29 +372,35 @@ function scheduleUpdate() {
     if (!_katexReady) { updateTimer = setTimeout(scheduleUpdate, 50); return; }
     updateTimer = setTimeout(update, 200);
 }
-$('export-tex').addEventListener('click', downloadLatex);
-['D', 't'].forEach(id => {
-    $(id).addEventListener('input', drawSection);
-});
-document.querySelectorAll('input.num, select.inline, input.txt').forEach(el => {
-    el.addEventListener('input', scheduleUpdate);
-    el.addEventListener('change', scheduleUpdate);
-});
+if (typeof document !== 'undefined') {
+    $('download-pdf').addEventListener('click', downloadPdf);
+    ['D', 't'].forEach(id => {
+        $(id).addEventListener('input', drawSection);
+    });
+    document.querySelectorAll('input.num, select.inline, input.txt').forEach(el => {
+        el.addEventListener('input', scheduleUpdate);
+        el.addEventListener('change', scheduleUpdate);
+    });
 
-// Header init
-(function initHeader() {
-    const d = $('hdr-date');
-    if (d && !d.value) d.value = new Date().toISOString().slice(0, 10);
-})();
+    const dateInput = $('hdr-date');
+    if (dateInput && !dateInput.value) dateInput.value = formatLocalDateForInput();
 
-// Bootstrap: wait for KaTeX, render inline math + scope (synchronously),
-// then run first calc.
-(function bootstrap() {
-    if (typeof katex === 'undefined') { setTimeout(bootstrap, 30); return; }
-    _katexReady = true;
-    renderInlineMath();
-    renderScope(SCOPE_NOTE);
-    drawSection();
-    update();
-})();
+    (function bootstrap() {
+        if (typeof katex === 'undefined') { setTimeout(bootstrap, 30); return; }
+        _katexReady = true;
+        renderInlineMath();
+        renderScope(SCOPE_NOTE);
+        syncBundleGridOptions();
+        drawSection();
+        update();
+    }());
+}
+
+if (typeof module === 'object' && module.exports) {
+    module.exports = {
+        buildPrintDocumentTitle,
+        formatLocalDateForInput,
+        sanitizePrintTitlePart,
+    };
+}
 
